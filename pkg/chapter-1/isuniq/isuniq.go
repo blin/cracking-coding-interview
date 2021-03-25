@@ -2,7 +2,6 @@ package isuniq
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/awalterschulze/gographviz"
 )
@@ -75,22 +74,5 @@ func IsUniqueNoDataStructures(s string) bool {
 			}
 		}
 	}
-	return true
-}
-
-func IsUniqueWithSort(s string) bool {
-	// []byte(string) -> runtime.stringtoslicebyte which allocates
-	rs := []byte(s)
-	// calling `func f(x interface{})` as `f([]byte)` results in runtime.convTslice call, which allocates
-	// sort.Slice calls reflectlite.Swapper which allocates
-	sort.Slice(rs, func(i, j int) bool { return rs[i] < rs[j] })
-
-	// TODO test on empty string and one element string
-	for i := 0; i < len(rs)-1; i++ {
-		if rs[i] == rs[i+1] {
-			return false
-		}
-	}
-
 	return true
 }

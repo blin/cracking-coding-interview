@@ -24,15 +24,6 @@ func TestIsUniqueNoDataStructures(t *testing.T) {
 	}
 }
 
-func TestIsUniqueWithSort(t *testing.T) {
-	if !IsUniqueWithSort("cba") {
-		t.Errorf(`got IsUniqueWithSort("cba")==false, expected true`)
-	}
-	if IsUniqueWithSort("aaa") {
-		t.Errorf(`got IsUniqueWithSort("aaa")==true, expected false`)
-	}
-}
-
 const size int = 1000
 
 var list = make([]rune, size)
@@ -94,21 +85,5 @@ func BenchmarkIsUniqueNoDataStructuresWorstCase(b *testing.B) {
 	s := RandStringWithoutRepetition(size)
 	for n := 0; n < b.N; n++ {
 		IsUniqueNoDataStructures(s)
-	}
-}
-
-func BenchmarkIsUniqueWithSort(b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		b.StopTimer()
-		s := RandStringWithRepetition(size)
-		b.StartTimer()
-		IsUniqueWithSort(s)
-	}
-}
-
-func BenchmarkIsUniqueWithSortWorstCase(b *testing.B) {
-	s := RandStringWithoutRepetition(size)
-	for n := 0; n < b.N; n++ {
-		IsUniqueWithSort(s)
 	}
 }
