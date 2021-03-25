@@ -12,7 +12,7 @@ import (
 func main() {
 	isuniq.GenerateGraphviz = true
 
-	isuniq.IsUniqueNoDataStructures("asdfghjkl;")
+	isuniq.IsUnique("asdfghjkl;a")
 
 	wd, err := os.Getwd()
 	if err != nil {
@@ -27,7 +27,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	for i, g := range isuniq.IsUniqueNoDataStructuresGraphs {
+	for i, g := range isuniq.IsUniqueGraphs {
 		fn := path.Join(dotDir, fmt.Sprintf("%03d.dot", i))
 		err := ioutil.WriteFile(fn, []byte(g.String()), 0644)
 		if err != nil {

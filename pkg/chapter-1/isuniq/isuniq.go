@@ -8,13 +8,61 @@ import (
 
 var GenerateGraphviz = false
 
+var IsUniqueGraphs = []*gographviz.Graph{}
+
 func IsUnique(s string) bool {
-	chars := make(map[rune]int, len(s))
-	for _, r := range s {
-		if chars[r] == 1 {
+	if GenerateGraphviz {
+		g := GenerateStringBaseGraph(s)
+
+		IsUniqueGraphs = append(IsUniqueNoDataStructuresGraphs, g)
+	}
+	charSet := make(map[rune]bool, len(s))
+	for i, r := range s {
+		var g *gographviz.Graph
+		charIndexes := map[rune]int{}
+		if GenerateGraphviz {
+			{
+				// TODO: consider extracting into a function
+				charIdx := 0
+				for ck := range charSet {
+					charIndexes[ck] = charIdx
+					charIdx++
+				}
+			}
+			g = GenerateStringBaseGraph(s)
+
+			n1 := StringIndexToNode(g, i)
+			n1.Attrs[gographviz.Style] = "filled"
+			n1.Attrs[gographviz.FillColor] = "blue"
+
+			// TODO: extract into a function
+			g.AddSubGraph("G", "charSet", nil)
+			for ck := range charSet {
+				charIdx := charIndexes[ck]
+				keyNodeName := fmt.Sprintf("c%dk", charIdx)
+				g.AddNode("charSet", keyNodeName, map[string]string{
+					"label": fmt.Sprintf(`"%c"`, ck),
+				})
+				if charIdx > 0 {
+					srcNode := fmt.Sprintf("c%dk", charIdx-1)
+					dstNode := fmt.Sprintf("c%dk", charIdx)
+					g.AddEdge(srcNode, dstNode, true, nil)
+				}
+			}
+
+			IsUniqueGraphs = append(IsUniqueGraphs, g)
+		}
+		if charSet[r] {
+			if g != nil {
+				// TODO: consider extracting into a function
+				keyNodeName := fmt.Sprintf("c%dk", charIndexes[r])
+				kn := g.Nodes.Lookup[keyNodeName]
+				kn.Attrs[gographviz.Style] = "filled"
+				kn.Attrs[gographviz.FillColor] = "red"
+			}
 			return false
 		}
-		chars[r]++
+		charSet[r] = true
 	}
 	return true
 }
@@ -32,6 +80,8 @@ func StringIndexToNode(g *gographviz.Graph, i int) *gographviz.Node {
 func GenerateStringBaseGraph(s string) *gographviz.Graph {
 	g := gographviz.NewGraph()
 	g.SetName("G")
+	g.SetDir(true)
+	g.AddAttr("G", "rankdir", "LR")
 	for i, r := range s {
 		g.AddNode("G", StringIndexToNodeName(i), map[string]string{
 			"label": fmt.Sprintf(`"%c"`, r),
@@ -42,7 +92,7 @@ func GenerateStringBaseGraph(s string) *gographviz.Graph {
 		}
 		srcNode := StringIndexToNodeName(i - 1)
 		dstNode := StringIndexToNodeName(i)
-		g.AddEdge(srcNode, dstNode, false, nil)
+		g.AddEdge(srcNode, dstNode, true, nil)
 	}
 	return g
 }
