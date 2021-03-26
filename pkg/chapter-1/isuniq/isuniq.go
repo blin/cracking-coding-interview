@@ -36,7 +36,7 @@ func addCharSet(g *gographviz.Graph, charSet map[rune]bool, charIndexes map[rune
 
 func IsUnique(s string) bool {
 	if GenerateGraphviz {
-		g := GenerateStringBaseGraph(s)
+		g := generateStringBaseGraph(s)
 
 		IsUniqueGraphs = append(IsUniqueNoDataStructuresGraphs, g)
 	}
@@ -51,9 +51,9 @@ func IsUnique(s string) bool {
 				charIdx++
 			}
 
-			g = GenerateStringBaseGraph(s)
+			g = generateStringBaseGraph(s)
 
-			n1 := StringIndexToNode(g, i)
+			n1 := stringIndexToNode(g, i)
 			n1.Attrs[gographviz.Style] = "filled"
 			n1.Attrs[gographviz.FillColor] = "blue"
 
@@ -76,30 +76,29 @@ func IsUnique(s string) bool {
 
 var IsUniqueNoDataStructuresGraphs = []*gographviz.Graph{}
 
-// TODO: make private, here and elsewhere
-func StringIndexToNodeName(i int) string {
+func stringIndexToNodeName(i int) string {
 	return fmt.Sprintf("s%d", i)
 }
 
-func StringIndexToNode(g *gographviz.Graph, i int) *gographviz.Node {
-	return g.Nodes.Lookup[StringIndexToNodeName(i)]
+func stringIndexToNode(g *gographviz.Graph, i int) *gographviz.Node {
+	return g.Nodes.Lookup[stringIndexToNodeName(i)]
 }
 
-func GenerateStringBaseGraph(s string) *gographviz.Graph {
+func generateStringBaseGraph(s string) *gographviz.Graph {
 	g := gographviz.NewGraph()
 	g.SetName("G")
 	g.SetDir(true)
 	g.AddAttr("G", "rankdir", "LR")
 	for i, r := range s {
-		g.AddNode("G", StringIndexToNodeName(i), map[string]string{
+		g.AddNode("G", stringIndexToNodeName(i), map[string]string{
 			"label": fmt.Sprintf(`"%c"`, r),
 		})
 
 		if i == 0 {
 			continue
 		}
-		srcNode := StringIndexToNodeName(i - 1)
-		dstNode := StringIndexToNodeName(i)
+		srcNode := stringIndexToNodeName(i - 1)
+		dstNode := stringIndexToNodeName(i)
 		g.AddEdge(srcNode, dstNode, true, nil)
 	}
 	return g
@@ -107,7 +106,7 @@ func GenerateStringBaseGraph(s string) *gographviz.Graph {
 
 func IsUniqueNoDataStructures(s string) bool {
 	if GenerateGraphviz {
-		g := GenerateStringBaseGraph(s)
+		g := generateStringBaseGraph(s)
 
 		IsUniqueNoDataStructuresGraphs = append(IsUniqueNoDataStructuresGraphs, g)
 	}
@@ -115,13 +114,13 @@ func IsUniqueNoDataStructures(s string) bool {
 		i2Offset := i1 + 1
 		for i2, r2 := range s[i2Offset:] {
 			if GenerateGraphviz {
-				g := GenerateStringBaseGraph(s)
+				g := generateStringBaseGraph(s)
 
-				n1 := StringIndexToNode(g, i1)
+				n1 := stringIndexToNode(g, i1)
 				n1.Attrs[gographviz.Style] = "filled"
 				n1.Attrs[gographviz.FillColor] = "blue"
 
-				n2 := StringIndexToNode(g, i2+i2Offset)
+				n2 := stringIndexToNode(g, i2+i2Offset)
 				n2.Attrs[gographviz.Style] = "filled"
 				n2.Attrs[gographviz.FillColor] = "red"
 
