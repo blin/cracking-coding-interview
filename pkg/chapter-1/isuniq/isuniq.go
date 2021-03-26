@@ -10,6 +10,30 @@ var GenerateGraphviz = false
 
 var IsUniqueGraphs = []*gographviz.Graph{}
 
+func charIdxToNodeName(charIdx int) string {
+	return fmt.Sprintf("c%dk", charIdx)
+}
+
+func charToNodeName(c rune, charIndexes map[rune]int) string {
+	return charIdxToNodeName(charIndexes[c])
+}
+
+func addCharSet(g *gographviz.Graph, charSet map[rune]bool, charIndexes map[rune]int) {
+	g.AddSubGraph("G", "charSet", nil)
+	for c := range charSet {
+		g.AddNode("charSet", charToNodeName(c, charIndexes), map[string]string{
+			"label": fmt.Sprintf(`"%c"`, c),
+		})
+
+		charIdx := charIndexes[c]
+		if charIdx > 0 {
+			srcNode := charIdxToNodeName(charIdx - 1)
+			dstNode := charIdxToNodeName(charIdx)
+			g.AddEdge(srcNode, dstNode, true, nil)
+		}
+	}
+}
+
 func IsUnique(s string) bool {
 	if GenerateGraphviz {
 		g := GenerateStringBaseGraph(s)
@@ -21,42 +45,25 @@ func IsUnique(s string) bool {
 		var g *gographviz.Graph
 		charIndexes := map[rune]int{}
 		if GenerateGraphviz {
-			{
-				// TODO: consider extracting into a function
-				charIdx := 0
-				for ck := range charSet {
-					charIndexes[ck] = charIdx
-					charIdx++
-				}
+			charIdx := 0
+			for c := range charSet {
+				charIndexes[c] = charIdx
+				charIdx++
 			}
+
 			g = GenerateStringBaseGraph(s)
 
 			n1 := StringIndexToNode(g, i)
 			n1.Attrs[gographviz.Style] = "filled"
 			n1.Attrs[gographviz.FillColor] = "blue"
 
-			// TODO: extract into a function
-			g.AddSubGraph("G", "charSet", nil)
-			for ck := range charSet {
-				charIdx := charIndexes[ck]
-				keyNodeName := fmt.Sprintf("c%dk", charIdx)
-				g.AddNode("charSet", keyNodeName, map[string]string{
-					"label": fmt.Sprintf(`"%c"`, ck),
-				})
-				if charIdx > 0 {
-					srcNode := fmt.Sprintf("c%dk", charIdx-1)
-					dstNode := fmt.Sprintf("c%dk", charIdx)
-					g.AddEdge(srcNode, dstNode, true, nil)
-				}
-			}
+			addCharSet(g, charSet, charIndexes)
 
 			IsUniqueGraphs = append(IsUniqueGraphs, g)
 		}
 		if charSet[r] {
 			if g != nil {
-				// TODO: consider extracting into a function
-				keyNodeName := fmt.Sprintf("c%dk", charIndexes[r])
-				kn := g.Nodes.Lookup[keyNodeName]
+				kn := g.Nodes.Lookup[charToNodeName(r, charIndexes)]
 				kn.Attrs[gographviz.Style] = "filled"
 				kn.Attrs[gographviz.FillColor] = "red"
 			}
@@ -69,6 +76,7 @@ func IsUnique(s string) bool {
 
 var IsUniqueNoDataStructuresGraphs = []*gographviz.Graph{}
 
+// TODO: make private, here and elsewhere
 func StringIndexToNodeName(i int) string {
 	return fmt.Sprintf("s%d", i)
 }
