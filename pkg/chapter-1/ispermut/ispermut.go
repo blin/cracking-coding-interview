@@ -1,6 +1,6 @@
 package ispermut
 
-import ()
+import "sort"
 
 func countRunes(s string) map[rune]int {
 	counts := map[rune]int{}
@@ -51,5 +51,21 @@ func IsPermutationNoAlloc(s1 string, s2 string) bool {
 		}
 	}
 
+	return true
+}
+
+func IsPermutationMutating(s1 []rune, s2 []rune) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+
+	sort.Slice(s1, func(i int, j int) bool { return s1[i] < s1[j] })
+	sort.Slice(s2, func(i int, j int) bool { return s2[i] < s2[j] })
+
+	for i1, r1 := range s1 {
+		if r1 != s2[i1] {
+			return false
+		}
+	}
 	return true
 }

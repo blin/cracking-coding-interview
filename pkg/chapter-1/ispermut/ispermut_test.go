@@ -1,6 +1,9 @@
 package ispermut
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestIsPermutation(t *testing.T) {
 	cases := []struct {
@@ -56,6 +59,35 @@ func TestIsPermutationNoAlloc(t *testing.T) {
 		got := IsPermutationNoAlloc(tc.s1, tc.s2)
 		if got != tc.want {
 			t.Errorf(`IsPermutationNoAlloc("%s", "%s")==%t, expected %t`, tc.s1, tc.s2, got, tc.want)
+		}
+	}
+}
+
+func TestIsPermutationMutating(t *testing.T) {
+	cases := []struct {
+		s1, s2 []rune
+		want   bool
+	}{
+		{
+			s1:   []rune("aaa"),
+			s2:   []rune("aaa"),
+			want: true,
+		},
+		{
+			s1:   []rune("abc"),
+			s2:   []rune("cba"),
+			want: true,
+		},
+		{
+			s1:   []rune("abc"),
+			s2:   []rune("ccc"),
+			want: false,
+		},
+	}
+	for _, tc := range cases {
+		got := IsPermutationMutating(tc.s1, tc.s2)
+		if got != tc.want {
+			t.Errorf(`IsPermutationMutating("%s", "%s")==%t, expected %t`, string(tc.s1), string(tc.s2), got, tc.want)
 		}
 	}
 }
