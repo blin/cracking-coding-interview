@@ -55,7 +55,7 @@ func TestIsPermutationNoAlloc(t *testing.T) {
 	for _, tc := range cases {
 		got := IsPermutationNoAlloc(tc.s1, tc.s2)
 		if got != tc.want {
-			t.Errorf(`IsPermutation("%s", "%s")==%t, expected %t`, tc.s1, tc.s2, got, tc.want)
+			t.Errorf(`IsPermutationNoAlloc("%s", "%s")==%t, expected %t`, tc.s1, tc.s2, got, tc.want)
 		}
 	}
 }
