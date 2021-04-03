@@ -1,7 +1,6 @@
 package ispermut
 
 import (
-	"fmt"
 	"testing"
 )
 
