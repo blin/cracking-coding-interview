@@ -5,6 +5,108 @@ import (
 	"testing"
 )
 
+func TestComputeSquarePosition(t *testing.T) {
+	cases := []struct {
+		sideSize int
+		depth    int
+		idx      int
+		wantY    int
+		wantX    int
+	}{
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      0,
+			wantY:    0,
+			wantX:    0,
+		},
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      5,
+			wantY:    0,
+			wantX:    5,
+		},
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      6,
+			wantY:    1,
+			wantX:    5,
+		},
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      10,
+			wantY:    5,
+			wantX:    5,
+		},
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      11,
+			wantY:    5,
+			wantX:    4,
+		},
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      15,
+			wantY:    5,
+			wantX:    0,
+		},
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      16,
+			wantY:    4,
+			wantX:    0,
+		},
+		{
+			sideSize: 6,
+			depth:    0,
+			idx:      19,
+			wantY:    1,
+			wantX:    0,
+		},
+		{
+			sideSize: 6,
+			depth:    1,
+			idx:      0,
+			wantY:    1,
+			wantX:    1,
+		},
+		{
+			sideSize: 6,
+			depth:    1,
+			idx:      4,
+			wantY:    2,
+			wantX:    4,
+		},
+		{
+			sideSize: 6,
+			depth:    1,
+			idx:      7,
+			wantY:    4,
+			wantX:    3,
+		},
+		{
+			sideSize: 6,
+			depth:    1,
+			idx:      10,
+			wantY:    3,
+			wantX:    1,
+		},
+	}
+
+	for _, tc := range cases {
+		gotY, gotX := computeSquarePosition(tc.sideSize, tc.depth, tc.idx)
+		if gotY != tc.wantY || gotX != tc.wantX {
+			t.Errorf("computeSquarePosition(%d, %d, %d)==(%d, %d), expected (%d, %d)", tc.sideSize, tc.depth, tc.idx, gotY, gotX, tc.wantY, tc.wantX)
+		}
+	}
+}
+
 func TestRotate(t *testing.T) {
 	yxM := [][]uint32{
 		{1, 2, 3, 4, 5, 6},

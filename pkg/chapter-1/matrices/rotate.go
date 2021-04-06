@@ -1,6 +1,7 @@
 package matrices
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 )
@@ -24,6 +25,44 @@ func matrixToImage(yxM [][]uint32) *image.CMYK {
 	return img
 }
 
+func computeSquarePosition(sideSize, depth, idx int) (y int, x int) {
+	sideSizeAtDepth := sideSize - (depth * 2)
+
+	maxTop := sideSizeAtDepth - 1
+	maxRight := maxTop + sideSizeAtDepth - 1
+	maxBottom := maxRight + sideSizeAtDepth - 1
+	maxLeft := maxBottom + sideSizeAtDepth - 2
+
+	maxIdx := maxLeft
+	if idx < 0 || idx > maxLeft {
+		panic(fmt.Errorf("got idx=%d , want idx within [0, %d]", idx, maxIdx))
+	}
+
+	farthestAtDepth := sideSize - depth - 1
+
+	if idx >= 0 && idx <= maxTop {
+		y = depth
+		x = depth + idx
+		return
+	}
+
+	if idx > maxTop && idx <= maxRight {
+		y = depth + (idx - maxTop)
+		x = farthestAtDepth
+		return
+	}
+
+	if idx > maxRight && idx <= maxBottom {
+		y = farthestAtDepth
+		x = farthestAtDepth - (idx - maxRight)
+		return
+	}
+
+	y = farthestAtDepth - (idx - maxBottom)
+	x = depth
+	return
+}
+
 // TODO: move channel out of the API into a global var
 func Rotate(yxM [][]uint32, ch chan image.Image) {
 	if len(yxM) == 0 {
@@ -37,23 +76,19 @@ func Rotate(yxM [][]uint32, ch chan image.Image) {
 		ch <- matrixToImage(yxM)
 	}
 
-	rowLen := len(yxM)
-	for y0 := 0; y0 < (rowLen / 2); y0++ {
-		for x0 := y0; x0 < (rowLen - y0 - 1); x0++ {
+	sideSize := len(yxM)
+	for depth := 0; depth < (sideSize / 2); depth++ {
+		sideSizeAtDepth := sideSize - (depth * 2)
+		for i := 0; i < (sideSizeAtDepth - 1); i++ {
+			y0, x0 := computeSquarePosition(sideSize, depth, i+((sideSizeAtDepth-1)*0))
+			y1, x1 := computeSquarePosition(sideSize, depth, i+((sideSizeAtDepth-1)*1))
+			y2, x2 := computeSquarePosition(sideSize, depth, i+((sideSizeAtDepth-1)*2))
+			y3, x3 := computeSquarePosition(sideSize, depth, i+((sideSizeAtDepth-1)*3))
+
 			tmp := yxM[y0][x0]
-
-			y3 := rowLen - 1 - x0
-			x3 := y0
 			yxM[y0][x0] = yxM[y3][x3]
-
-			y2 := rowLen - 1 - y0
-			x2 := rowLen - 1 - x0
 			yxM[y3][x3] = yxM[y2][x2]
-
-			y1 := x0
-			x1 := rowLen - 1 - y0
 			yxM[y2][x2] = yxM[y1][x1]
-
 			yxM[y1][x1] = tmp
 
 			if ch != nil {
