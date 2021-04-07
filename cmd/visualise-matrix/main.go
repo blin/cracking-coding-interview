@@ -34,13 +34,13 @@ func main() {
 	}
 
 	yxM := squareMatrix(50)
-	imageCh := make(chan image.Image)
+	matrices.RotateProcessImages = make(chan image.Image)
 
-	go matrices.Rotate(yxM, imageCh)
+	go matrices.Rotate(yxM)
 
 	i := 0
 	var pngEnc png.Encoder
-	for img := range imageCh {
+	for img := range matrices.RotateProcessImages {
 		fn := path.Join(imagesDir, fmt.Sprintf("%05d.png", i))
 		f, err := os.Create(fn)
 		if err != nil {

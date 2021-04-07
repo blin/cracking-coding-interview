@@ -149,7 +149,7 @@ func TestRotate(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		Rotate(tc.yxM, nil)
+		Rotate(tc.yxM)
 		if !reflect.DeepEqual(tc.yxM, tc.want) {
 			t.Errorf(`Rotate()==%v, expected %v`, tc.yxM, tc.want)
 

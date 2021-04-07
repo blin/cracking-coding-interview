@@ -63,8 +63,9 @@ func computeSquarePosition(sideSize, depth, idx int) (y int, x int) {
 	return
 }
 
-// TODO: move channel out of the API into a global var
-func Rotate(yxM [][]uint32, ch chan image.Image) {
+var RotateProcessImages chan image.Image
+
+func Rotate(yxM [][]uint32) {
 	if len(yxM) == 0 {
 		panic("an empty matrix passed to Rotate")
 	}
@@ -72,8 +73,8 @@ func Rotate(yxM [][]uint32, ch chan image.Image) {
 		panic("a non-square matrix passed to Rotate")
 	}
 
-	if ch != nil {
-		ch <- matrixToImage(yxM)
+	if RotateProcessImages != nil {
+		RotateProcessImages <- matrixToImage(yxM)
 	}
 
 	sideSize := len(yxM)
@@ -91,19 +92,19 @@ func Rotate(yxM [][]uint32, ch chan image.Image) {
 			yxM[y2][x2] = yxM[y1][x1]
 			yxM[y1][x1] = tmp
 
-			if ch != nil {
+			if RotateProcessImages != nil {
 				img := matrixToImage(yxM)
 				img.SetCMYK(x0, y0, color.CMYK{C: 0xFF})
 				img.SetCMYK(x1, y1, color.CMYK{M: 0xFF})
 				img.SetCMYK(x2, y2, color.CMYK{Y: 0xFF})
 				img.SetCMYK(x3, y3, color.CMYK{K: 0xFF})
-				ch <- img
+				RotateProcessImages <- img
 			}
 		}
 	}
 
-	if ch != nil {
-		ch <- matrixToImage(yxM)
-		close(ch)
+	if RotateProcessImages != nil {
+		RotateProcessImages <- matrixToImage(yxM)
+		close(RotateProcessImages)
 	}
 }
