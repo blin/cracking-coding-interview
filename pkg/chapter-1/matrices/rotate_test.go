@@ -181,6 +181,16 @@ func TestZeroCrossForZeroElement(t *testing.T) {
 				{0, 15, 14, 13, 12, 11},
 			},
 		},
+		{
+			yxM: [][]uint32{
+				{1, 2, 3, 4, 5, 6},
+				{20, 21, 0, 23, 24, 7},
+			},
+			want: [][]uint32{
+				{1, 2, 0, 4, 5, 6},
+				{0, 0, 0, 0, 0, 0},
+			},
+		},
 	}
 
 	for _, tc := range cases {
