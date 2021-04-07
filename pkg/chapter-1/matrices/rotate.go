@@ -108,3 +108,28 @@ func Rotate(yxM [][]uint32) {
 		close(RotateProcessImages)
 	}
 }
+
+func ZeroCrossForZeroElement(yxM [][]uint32) {
+	if len(yxM) == 0 {
+		panic("an empty matrix passed to Zero")
+	}
+
+	rowsToZero := map[int]bool{}
+	colsToZero := map[int]bool{}
+	for y := 0; y < len(yxM); y++ {
+		for x := 0; x < len(yxM[0]); x++ {
+			if yxM[y][x] == 0 {
+				rowsToZero[y] = true
+				colsToZero[x] = true
+			}
+		}
+	}
+
+	for y := 0; y < len(yxM); y++ {
+		for x := 0; x < len(yxM[0]); x++ {
+			if rowsToZero[y] || colsToZero[x] {
+				yxM[y][x] = 0
+			}
+		}
+	}
+}
