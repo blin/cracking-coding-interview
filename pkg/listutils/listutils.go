@@ -10,21 +10,31 @@ type HashEq interface {
 	Equal(interface{}) bool
 }
 
-type HashEqInt int
+type Ordered interface {
+	Compare(interface{}) int
+}
 
-func (i HashEqInt) Hash() uint64 {
+type HashEqOrderedInt int
+
+func (i HashEqOrderedInt) Hash() uint64 {
 	return uint64(i)
 }
 
-func (i HashEqInt) Equal(o interface{}) bool {
+func (i HashEqOrderedInt) Equal(o interface{}) bool {
 	return reflect.DeepEqual(i, o)
+}
+
+func (i HashEqOrderedInt) Compare(o interface{}) int {
+	oAsserted := o.(HashEqOrderedInt)
+	return int(i) - int(oAsserted)
+
 }
 
 func IntSliceToList(s []int) *list.List {
 	l := list.New()
 
 	for _, e := range s {
-		l.PushBack(HashEqInt(e))
+		l.PushBack(HashEqOrderedInt(e))
 	}
 
 	return l
@@ -34,7 +44,7 @@ func ListToIntSlice(l *list.List) []int {
 	var s []int
 
 	for e := l.Front(); e != nil; e = e.Next() {
-		v, ok := e.Value.(HashEqInt)
+		v, ok := e.Value.(HashEqOrderedInt)
 		if !ok {
 			panic("non int value in list")
 		}
