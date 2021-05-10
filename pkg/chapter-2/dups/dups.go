@@ -9,14 +9,14 @@ import (
 // Duplicates are taken to mean "list elements with the same value"
 func RemoveDuplicates(l *list.List) {
 	// TODO: collisions
-	values := map[uint64][]listutils.Comparable{}
+	values := map[uint64][]listutils.HashEq{}
 	e := l.Front()
 	for {
 		if e == nil {
 			break
 		}
 
-		v, ok := e.Value.(listutils.Comparable)
+		v, ok := e.Value.(listutils.HashEq)
 		if !ok {
 			panic("non comparable value in list")
 		}
@@ -24,7 +24,7 @@ func RemoveDuplicates(l *list.List) {
 		foundCollision := false
 		valuesWithSameHash := values[v.Hash()]
 		for _, valueWithSameHash := range valuesWithSameHash {
-			if v.Compare(valueWithSameHash) {
+			if v.Equal(valueWithSameHash) {
 				foundCollision = true
 			}
 		}

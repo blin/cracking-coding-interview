@@ -59,7 +59,7 @@ func TestDups(t *testing.T) {
 			if err != nil {
 				return
 			}
-			gotInt := int(got.(listutils.ComparableInt))
+			gotInt := int(got.(listutils.HashEqInt))
 			if gotInt != tc.want {
 				t.Errorf("got=%+v, want=%+v", gotInt, tc.want)
 			}
