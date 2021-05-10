@@ -5,6 +5,11 @@ import (
 	"reflect"
 )
 
+type Comparable interface {
+	Hash() uint64
+	Compare(interface{}) bool
+}
+
 type ComparableInt int
 
 func (i ComparableInt) Hash() uint64 {

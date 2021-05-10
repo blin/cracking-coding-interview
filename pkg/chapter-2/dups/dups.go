@@ -2,24 +2,21 @@ package dups
 
 import (
 	"container/list"
-)
 
-type Comparable interface {
-	Hash() uint64
-	Compare(interface{}) bool
-}
+	"github.com/blin/cracking-coding-interview/pkg/listutils"
+)
 
 // Duplicates are taken to mean "list elements with the same value"
 func RemoveDuplicates(l *list.List) {
 	// TODO: collisions
-	values := map[uint64][]Comparable{}
+	values := map[uint64][]listutils.Comparable{}
 	e := l.Front()
 	for {
 		if e == nil {
 			break
 		}
 
-		v, ok := e.Value.(Comparable)
+		v, ok := e.Value.(listutils.Comparable)
 		if !ok {
 			panic("non comparable value in list")
 		}
