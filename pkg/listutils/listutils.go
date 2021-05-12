@@ -14,6 +14,10 @@ type Ordered interface {
 	Compare(interface{}) int
 }
 
+type Int interface {
+	Int() int
+}
+
 type HashEqOrderedInt int
 
 func (i HashEqOrderedInt) Hash() uint64 {
@@ -28,6 +32,10 @@ func (i HashEqOrderedInt) Compare(o interface{}) int {
 	oAsserted := o.(HashEqOrderedInt)
 	return int(i) - int(oAsserted)
 
+}
+
+func (i HashEqOrderedInt) Int() int {
+	return int(i)
 }
 
 func IntSliceToList(s []int) *list.List {
