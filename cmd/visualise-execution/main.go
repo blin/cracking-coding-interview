@@ -6,13 +6,14 @@ import (
 	"os"
 	"path"
 
-	"github.com/blin/cracking-coding-interview/pkg/chapter-1/isuniq"
+	"github.com/blin/cracking-coding-interview/pkg/chapter-2/intersection"
 )
 
 func main() {
-	isuniq.GenerateGraphviz = true
+	intersection.GenerateGraphviz = true
 
-	isuniq.IsUnique("asdfghjkl;a")
+	head1, head2, _ := intersection.GenerateIntersectingLists([]int{10, 11, 12}, []int{20, 21, 11}, 11)
+	intersection.FindIntersection(head1, head2)
 
 	wd, err := os.Getwd()
 	if err != nil {
@@ -27,7 +28,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	for i, g := range isuniq.IsUniqueGraphs {
+	for i, g := range intersection.FindIntersectionGraphs {
 		fn := path.Join(dotDir, fmt.Sprintf("%03d.dot", i))
 		err := ioutil.WriteFile(fn, []byte(g.String()), 0644)
 		if err != nil {
