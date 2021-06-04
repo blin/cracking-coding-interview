@@ -4,32 +4,14 @@ import (
 	"fmt"
 
 	"github.com/awalterschulze/gographviz"
+	"github.com/blin/cracking-coding-interview/pkg/slist"
 )
-
-type Element struct {
-	Next *Element
-
-	Value interface{}
-}
-
-func PushBack(head *Element, e *Element) {
-	back := Back(head)
-	back.Next = e
-}
-
-func Back(head *Element) *Element {
-	current := head
-	for current.Next != nil {
-		current = current.Next
-	}
-	return current
-}
 
 var GenerateGraphviz = false
 
 var FindIntersectionGraphs = []*gographviz.Graph{}
 
-func generateBaseGraph(head1, head2 *Element) *gographviz.Graph {
+func generateBaseGraph(head1, head2 *slist.Element) *gographviz.Graph {
 	g := gographviz.NewGraph()
 	g.SetName("G")
 	g.SetDir(true)
@@ -41,7 +23,7 @@ func generateBaseGraph(head1, head2 *Element) *gographviz.Graph {
 	return g
 }
 
-func recordBaseGraph(head1, head2 *Element) {
+func recordBaseGraph(head1, head2 *slist.Element) {
 	if !GenerateGraphviz {
 		return
 	}
@@ -50,7 +32,7 @@ func recordBaseGraph(head1, head2 *Element) {
 	FindIntersectionGraphs = append(FindIntersectionGraphs, g)
 }
 
-func recordElementProcessed(head1, head2, current1 *Element, colour string) {
+func recordElementProcessed(head1, head2, current1 *slist.Element, colour string) {
 	if !GenerateGraphviz {
 		return
 	}
@@ -63,10 +45,10 @@ func recordElementProcessed(head1, head2, current1 *Element, colour string) {
 	FindIntersectionGraphs = append(FindIntersectionGraphs, g)
 }
 
-func FindIntersection(head1, head2 *Element) *Element {
+func FindIntersection(head1, head2 *slist.Element) *slist.Element {
 	recordBaseGraph(head1, head2)
 
-	elementPointers := map[*Element]bool{}
+	elementPointers := map[*slist.Element]bool{}
 	current1 := head1
 	for current1 != nil {
 		recordElementProcessed(head1, head2, current1, "blue")
@@ -89,16 +71,16 @@ func FindIntersection(head1, head2 *Element) *Element {
 	return nil
 }
 
-func elementToNode(g *gographviz.Graph, e *Element) *gographviz.Node {
+func elementToNode(g *gographviz.Graph, e *slist.Element) *gographviz.Node {
 	eName := elementToNodeName(e)
 	return g.Nodes.Lookup[eName]
 }
 
-func elementToNodeName(e *Element) string {
+func elementToNodeName(e *slist.Element) string {
 	return fmt.Sprintf(`"%p"`, e)
 }
 
-func addListToGraph(g *gographviz.Graph, head *Element) {
+func addListToGraph(g *gographviz.Graph, head *slist.Element) {
 	current := head
 	for current.Next != nil {
 		currentName := elementToNodeName(current)
@@ -115,13 +97,13 @@ func addListToGraph(g *gographviz.Graph, head *Element) {
 	}
 }
 
-func GenerateIntersectingLists(l1, l2 []int, intersectionValue int) (*Element, *Element, *Element) {
-	var intersectionElement *Element
+func GenerateIntersectingLists(l1, l2 []int, intersectionValue int) (*slist.Element, *slist.Element, *slist.Element) {
+	var intersectionElement *slist.Element
 
-	var head1, head2 *Element
+	var head1, head2 *slist.Element
 
 	for _, l1value := range l1 {
-		e := &Element{Value: l1value}
+		e := &slist.Element{Value: l1value}
 		if l1value == intersectionValue {
 			intersectionElement = e
 		}
@@ -129,20 +111,20 @@ func GenerateIntersectingLists(l1, l2 []int, intersectionValue int) (*Element, *
 			head1 = e
 			continue
 		}
-		PushBack(head1, e)
+		slist.PushBack(head1, e)
 	}
 
 	for _, l2value := range l2 {
-		e := &Element{Value: l2value}
+		e := &slist.Element{Value: l2value}
 		if l2value == intersectionValue {
-			Back(head2).Next = intersectionElement
+			slist.Back(head2).Next = intersectionElement
 			break
 		}
 		if head2 == nil {
 			head2 = e
 			continue
 		}
-		PushBack(head2, e)
+		slist.PushBack(head2, e)
 	}
 
 	return head1, head2, intersectionElement
